@@ -92,7 +92,7 @@ def fit(time_event, censoring, labx, verbose=3):
 
 
 # %% Make plot
-def plot(out, fontsize=12, savepath='', width=10, height=6, cmap='Set1', cii_alpha=0.05, cii_lines='dense', methodtype='lifeline', title='Survival function', full_ylim=False, y_percentage=False):
+def plot(out, fontsize=12, savepath='', width=10, height=6, cmap='Set1', cii_alpha=0.05, cii_lines='dense', methodtype='lifeline', title='Survival function', full_ylim=False, y_percentage=False, ax=None, list_counts=True):
     """Make plot.
 
     Parameters
@@ -133,6 +133,8 @@ def plot(out, fontsize=12, savepath='', width=10, height=6, cmap='Set1', cii_alp
          None  (no lines)
     title : TYPE, optional
         DESCRIPTION. The default is 'Survival function'.
+    ax : matplotlib.Axes, optional
+        Plot on given axes if provided. The defualt is None.
 
     Returns
     -------
@@ -158,8 +160,10 @@ def plot(out, fontsize=12, savepath='', width=10, height=6, cmap='Set1', cii_alp
         kmf_all=[]
 
         # Startup figure
-        fig = plt.figure(figsize=(Param['width'], Param['height']))
-        ax = fig.add_subplot(111)
+        if ax is None:
+            fig = plt.figure(figsize=(Param['width'], Param['height']))
+            ax = fig.add_subplot(111)
+
         if full_ylim:
             ax.set_ylim([0.0, 1.05])
         if y_percentage:
@@ -186,33 +190,13 @@ def plot(out, fontsize=12, savepath='', width=10, height=6, cmap='Set1', cii_alp
             # Store
             kmf_all.append(kmf.fit(out['time_event'][idx], event_observed=out['censoring'][idx], label=classlabel[i], ci_labels=None, alpha=(1 - cii_alpha)))
 
-        if len(kmf_all)==1:
-            add_at_risk_counts(kmf_all[0], ax=ax)
-        elif len(kmf_all)==2:
-            add_at_risk_counts(kmf_all[0], kmf_all[1], ax=ax)
-        elif len(kmf_all)==3:
-            add_at_risk_counts(kmf_all[0], kmf_all[1], kmf_all[2], ax=ax)
-        elif len(kmf_all)==4:
-            add_at_risk_counts(kmf_all[0], kmf_all[1], kmf_all[2], kmf_all[3], ax=ax)
-        elif len(kmf_all)==5:
-            add_at_risk_counts(kmf_all[0], kmf_all[1], kmf_all[2], kmf_all[3], kmf_all[4], ax=ax)
-        elif len(kmf_all)==6:
-            add_at_risk_counts(kmf_all[0], kmf_all[1], kmf_all[2], kmf_all[3], kmf_all[4], kmf_all[5], ax=ax)
-        elif len(kmf_all)==7:
-            add_at_risk_counts(kmf_all[0], kmf_all[1], kmf_all[2], kmf_all[3], kmf_all[4], kmf_all[5], kmf_all[6], ax=ax)
-        elif len(kmf_all)==8:
-            add_at_risk_counts(kmf_all[0], kmf_all[1], kmf_all[2], kmf_all[3], kmf_all[4], kmf_all[5], kmf_all[6], kmf_all[7], ax=ax)
-        elif len(kmf_all)==9:
-            add_at_risk_counts(kmf_all[0], kmf_all[1], kmf_all[2], kmf_all[3], kmf_all[4], kmf_all[5], kmf_all[6], kmf_all[7], kmf_all[8], ax=ax)
-        elif len(kmf_all)==10:
-            add_at_risk_counts(kmf_all[0], kmf_all[1], kmf_all[2], kmf_all[3], kmf_all[4], kmf_all[5], kmf_all[6], kmf_all[7], kmf_all[8], kmf_all[9], ax=ax)
-        else:
-            print('[KM] Maximum of 10 classes is reached.')
+        if list_counts:
+            add_at_risk_counts(*kmf_all, ax=ax)
 
-        ax.tick_params(axis='x', length=15, width=1, direction='out', labelsize=Param['fontsize'])
-        ax.tick_params(axis='y', length=15, width=1, direction='out', labelsize=Param['fontsize'])
-        ax.spines['bottom'].set_position(['outward', Param['fontsize']])
-        ax.spines['left'].set_position(['outward', Param['fontsize']])
+        # ax.tick_params(axis='x', length=15, width=1, direction='out', labelsize=Param['fontsize'])
+        # ax.tick_params(axis='y', length=15, width=1, direction='out', labelsize=Param['fontsize'])
+        # ax.spines['bottom'].set_position(['outward', Param['fontsize']])
+        # ax.spines['left'].set_position(['outward', Param['fontsize']])
         #    ax.rc('font', size= Param['fontsize'])   # controls default text sizes
         #    ax.rc('axes',  labelsize = Param['fontsize'])  # fontsize of the x and y labels
 
